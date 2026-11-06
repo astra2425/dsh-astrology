@@ -1,0 +1,10 @@
+星术紫棋伙伴 · 适配参考
+https://github.com/PC2005-cloud/dsh-pet
+Commit: d1de1ae1f8734f70ded49c36d84a350e11ff4475
+
+参考动作池、加权避重、双缓冲与透明窗口交互思路，代码重新适配当前 Harness 桌面端。
+上游代码许可见 DSH-PET-MIT.txt。本包未包含上游动画、提示词或源视频。
+本包 idle.png / sing.png 为基于本项目紫棋角色生成的独立 2D 资源。
+frames-*.png 为当前八种动作和拖动专用跑步的独立生成 2D 序列帧图集，未使用上游动画像素。
+
+logo.js 复用当前 DeepSeek Harness MIT 许可 FishLogo 矢量轮廓，组合星术星光与轨道动画。

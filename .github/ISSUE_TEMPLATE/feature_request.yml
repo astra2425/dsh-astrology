@@ -1,0 +1,23 @@
+name: Feature request
+description: Suggest a focused Astrology plugin improvement
+title: "feature: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: desktop-api
+    attributes:
+      label: Desktop API
+      options:
+        - label: This request requires a new official Desktop host capability.

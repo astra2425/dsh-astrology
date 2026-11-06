@@ -1,0 +1,5 @@
+Astrology Desktop companion source is adapted for DeepSeek Harness. The action-pool and double-buffering ideas were informed by PC2005-cloud/dsh-pet at commit d1de1ae1f8734f70ded49c36d84a350e11ff447. The full upstream MIT notice is in DSH-PET-MIT.txt.
+
+The Ziqi companion artwork and action atlases in `resources/desktop/` were generated independently for this project and do not contain the upstream pet's animation pixels. The included DeepSeek Harness FishLogo vector material remains subject to the DeepSeek Harness MIT license and its upstream attribution.
+
+The default background video “自由的你.mp4” is not included because its redistribution terms are not recorded in this repository.

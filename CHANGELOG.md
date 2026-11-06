@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Enable theme, editable sidebar branding and local background media on stock Desktop without a native bridge.
+- Embed namespaced CSS with fixed selectors and normalized line endings so builds match across checkout paths and operating systems.
+
 - Validate the complete API v1 renderer bridge before mounting native settings.
 - Load and dispose styles for compatibility pages as well as Desktop presentation; scope root layout rules to active Astrology presentation.
 - Keep editable names separate from committed settings, retry failed reads, observe host updates and prevent overlapping operations.

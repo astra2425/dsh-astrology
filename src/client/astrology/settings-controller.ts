@@ -1,4 +1,4 @@
-import type { AstrologyCarrier, AstrologyPreferenceChanges, AstrologyPreferences } from './host-api.ts'
+import type { AstrologyClient, AstrologyPreferenceChanges, AstrologyPreferences } from './host-api.ts'
 
 export interface SettingsSnapshot {
   view?: AstrologyPreferences
@@ -9,7 +9,7 @@ export interface SettingsSnapshot {
 }
 
 /** Own committed host state separately from editable names and in-flight operations. */
-export function createSettingsController(api: AstrologyCarrier) {
+export function createSettingsController(api: AstrologyClient) {
   let snapshot: SettingsSnapshot = {
     draft: { chinese: '星术', english: 'ASTROLOGY' }, loading: true, busy: false, notice: '',
   }
@@ -108,6 +108,7 @@ export function createSettingsController(api: AstrologyCarrier) {
     },
     chooseVideo: () => run(() => api.chooseVideo()),
     chooseBackground: () => run(() => api.chooseBackground()),
+    clearBackground: api.clearBackground ? () => run(() => api.clearBackground!()) : undefined,
     preview: () => run(() => api.presentation(true), 'preview'),
   }
 }

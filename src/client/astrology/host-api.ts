@@ -37,6 +37,11 @@ export interface AstrologyCarrier {
   chooseBackground(): Promise<AstrologyPreferences>
 }
 
+/** Plugin-owned client operations can also be backed by renderer storage. */
+export type AstrologyClient = Omit<AstrologyCarrier, 'apiVersion'> & {
+  clearBackground?: () => Promise<AstrologyPreferences>
+}
+
 /** Check the complete bridge before installing any native-dependent UI. */
 export function isAstrologyCarrier(value: unknown): value is AstrologyCarrier {
   if (typeof value !== 'object' || value === null) return false

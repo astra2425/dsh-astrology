@@ -2,7 +2,7 @@
 
 Astrology adds a coordinated theme and Desktop personalization to DeepSeek Harness: a custom sidebar identity, workspace backdrop, startup intro, reasoning slider appearance and a floating Desktop companion.
 
-**Full functionality requires an official DeepSeek Harness Desktop release that provides Astrology API v1.** That host API is not part of the current public release. Until the upstream API is reviewed and shipped, installing the plugin shows a compatibility notice and does not create native windows. See [HOST-INTEGRATION.md](HOST-INTEGRATION.md).
+**Stock DeepSeek Harness Desktop supports the theme, sidebar names and workspace backgrounds.** Native startup intro, reasoning slider styling and the floating companion require a host with Astrology API v1. See [HOST-INTEGRATION.md](HOST-INTEGRATION.md).
 
 English | [简体中文](README.zh-CN.md)
 
@@ -19,13 +19,13 @@ English | [简体中文](README.zh-CN.md)
 
 ## Install
 
-Install only after the official Desktop release notes announce Astrology API v1:
+Launch Desktop once to initialize its profile, then quit Desktop completely and install using the DSH command:
 
 ```sh
 dsh plugin --profile desktop add github:astra2425/dsh-astrology
 ```
 
-Restart Desktop to load the bundle. To remove it:
+Open Desktop again. The theme applies automatically. In **Settings → Astrology**, save the sidebar names or import a PNG, JPEG, WebP, MP4 or WebM background (up to 128 MiB in stock mode). Use **Remove background** to delete the imported media. To uninstall:
 
 ```sh
 dsh plugin --profile desktop remove @dsh-external/dsh-plugin-astrology
@@ -37,7 +37,7 @@ To update the installed plugin:
 dsh plugin --profile desktop update @dsh-external/dsh-plugin-astrology
 ```
 
-Settings and imported media remain in Desktop user data after removal. The current plugin has no data-clear control. To remove them, close Desktop and delete the `astrology` subdirectory inside that installation's application `userData` directory; confirm the exact directory with the Desktop documentation for your operating system before deleting it.
+Stock mode stores settings in local storage and imported media in IndexedDB. The data remains after uninstalling the plugin. Native mode uses separate storage managed by the host.
 
 ## Build from source
 
@@ -56,13 +56,13 @@ Regression checks use host and DOM substitutes to cover settings, media lifecycl
 
 ## Compatibility
 
-The plugin's client bundle is loaded as a normal DSH Web client plugin. On a host without Astrology API v1, it applies the theme and reports that the full Desktop feature set is unavailable. Full Desktop behavior requires the official API, preload bridge and native resource support described in [HOST-INTEGRATION.md](HOST-INTEGRATION.md).
+The client bundle uses DSH theme and settings extension points. Stock mode exposes the theme, sidebar and background settings. Hosts with Astrology API v1 also expose native feature settings.
 
 ## Troubleshooting
 
-- **No Astrology settings:** confirm the bundle is enabled in the Desktop profile, restart Desktop, and check that its release provides Astrology API v1.
-- **The compatibility notice remains:** the installed Desktop host does not expose API v1, or the plugin and host API versions differ. Update Desktop after upstream support is released.
-- **An imported background is blank:** choose a supported image or MP4/WebM file again. Media is validated and served by the official Desktop host.
+- **No Astrology settings:** confirm the bundle is enabled in the Desktop profile, then quit and reopen Desktop.
+- **Only theme, sidebar and background settings appear:** the host is in stock mode. Native features require Astrology API v1.
+- **An imported background is blank:** try a supported image or an MP4/WebM file your Desktop build can decode.
 - **Settings did not save:** retry once Desktop is responsive. The UI keeps the last committed values when the host rejects a write.
 - **Settings could not load:** select **Retry** without closing settings. Cancelling a media picker reports **Settings unchanged**.
 - **Intro preview failed:** settings stay open with an error message. Retry once the host is responsive.

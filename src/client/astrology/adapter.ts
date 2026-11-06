@@ -3,7 +3,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type { BoundActions } from '@deepseek-ai/dsh-client-store'
-import type { AstrologyCarrier } from './host-api.ts'
+import type { AstrologyClient } from './host-api.ts'
 import { AstrologyBrandMark, AstrologyBrandName, AstrologySettings } from './Astrology.tsx'
 import { createAstrologyBrandStore } from './store.ts'
 import { observePreferences } from './observe.ts'
@@ -30,7 +30,9 @@ export const zh = {
   companionHelp: '长按伙伴约 0.35 秒后拖动；右键可打开菜单。悬停会触发动作。',
   statusEmpty: '', saved: '设置已保存。', failure: '保存失败，请重试。', loading: '正在读取设置…',
   unchanged: '设置未更改。', loadFailure: '无法读取设置，请重试。', retry: '重新读取', previewFailure: '无法预览片头，请重试。',
-  unsupportedTitle: '需要官方桌面扩展接口', unsupportedBody: '星术桌面功能需要官方 DeepSeek Harness Desktop 提供 Astrology API v1。请升级到支持该接口的 Desktop 版本后重启。',
+  rendererDescription: '主题已启用。可修改侧栏名称及工作区背景，设置和媒体保存在当前应用的数据中。',
+  nativeRequired: '原生启动片头、思考强度滑动条样式和悬浮桌宠需要宿主提供 Astrology API v1。',
+  clearBackground: '移除背景',
 }
 export const en: Record<keyof typeof zh, string> = {
   nav: 'Astrology', title: '星术 · ASTROLOGY', description: 'Personalize the sidebar name, workspace background, startup intro, reasoning slider and desktop companion.',
@@ -50,7 +52,9 @@ export const en: Record<keyof typeof zh, string> = {
   companionHelp: 'Hold for about 0.35 seconds to drag. Right-click for its menu; hovering triggers an action.',
   statusEmpty: '', saved: 'Settings saved.', failure: 'Save failed. Please try again.', loading: 'Loading settings…',
   unchanged: 'Settings unchanged.', loadFailure: 'Could not load settings. Please try again.', retry: 'Retry', previewFailure: 'Could not preview the intro. Please try again.',
-  unsupportedTitle: 'Official Desktop API required', unsupportedBody: 'Astrology Desktop features require Astrology API v1 from the official DeepSeek Harness Desktop. Upgrade to a Desktop release that includes this API, then restart.',
+  rendererDescription: 'The theme is active. Customize the sidebar name and workspace background. Preferences and media are stored in this app.',
+  nativeRequired: 'Native startup intro, reasoning slider styling and the floating companion require Astrology API v1 from the host.',
+  clearBackground: 'Remove background',
 }
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
@@ -61,7 +65,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 }
 
 /** @param ctx Child context with locale and slot services. @param api Restricted native carrier. */
-export function mountAstrology(ctx: Context, api: AstrologyCarrier): void {
+export function mountAstrology(ctx: Context, api: AstrologyClient, native: boolean): void {
   const ns = 'brand.astrology'
   ctx.effect(() => ctx.locale.register(ns, { zh, en }), 'Astrology dictionaries')
   const t = ctx.locale.bind(ns)
@@ -73,8 +77,8 @@ export function mountAstrology(ctx: Context, api: AstrologyCarrier): void {
     latest = view
     syncBrand(view.brandChinese, view.brandEnglish)
   }), 'Astrology brand preferences')
-  ctx.slots.inject('sidebar.brand.mark', () => ctx.slots.register({ name: 'sidebar.brand.mark' }, AstrologyBrandMark))
-  ctx.slots.inject('sidebar.brand.name', () => ctx.slots.register({ name: 'sidebar.brand.name', store,
+  ctx.slots.inject('sidebar.brand.mark', () => ctx.slots.register({ name: 'sidebar.brand.mark', priority: -10 }, AstrologyBrandMark))
+  ctx.slots.inject('sidebar.brand.name', () => ctx.slots.register({ name: 'sidebar.brand.name', priority: -10, store,
     inject: (actions: BoundActions<typeof store>) => {
       brandActions = actions
       if (latest) actions.sync(latest.brandChinese, latest.brandEnglish)
@@ -84,6 +88,6 @@ export function mountAstrology(ctx: Context, api: AstrologyCarrier): void {
   ctx.slots.inject('settings.section', () => ctx.slots.register({
     name: 'settings.section', id: 'astrology', order: 12, label: () => t('nav'), locale: ns,
     store,
-    inject: () => ({ api }),
+    inject: () => ({ api, native }),
   }, AstrologySettings))
 }

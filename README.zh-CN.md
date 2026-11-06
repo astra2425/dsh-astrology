@@ -2,7 +2,7 @@
 
 Astrology 为 DeepSeek Harness 提供统一的主题与桌面个性化：侧栏品牌名、主界面背景、启动片头、思考强度滑动条外观，以及桌面伙伴。
 
-**完整功能要求官方 DeepSeek Harness Desktop 发布 Astrology API v1。** 当前公开版本尚未提供该宿主接口。上游接口评审并发布前，安装插件会显示兼容性说明，不会创建原生窗口。详见 [宿主集成说明](HOST-INTEGRATION.md)。
+**普通 DSH Desktop 可直接使用主题、侧栏名称和工作区背景。** 原生启动片头、思考强度滑动条样式和悬浮桌宠需要宿主提供 Astrology API v1。详见 [宿主集成说明](HOST-INTEGRATION.md)。
 
 [English](README.md) | 简体中文
 
@@ -19,13 +19,13 @@ Astrology 为 DeepSeek Harness 提供统一的主题与桌面个性化：侧栏�
 
 ## 安装
 
-请等待官方 Desktop 更新说明确认已发布 Astrology API v1 后再安装：
+先启动一次 Desktop 初始化配置，然后完全退出 Desktop，再使用 DSH 命令安装：
 
 ```sh
 dsh plugin --profile desktop add github:astra2425/dsh-astrology
 ```
 
-重启 Desktop 使插件生效。卸载命令：
+重新打开 Desktop。主题自动生效。进入「设置 → 星术」，可保存中英文侧栏名称，或导入 PNG、JPEG、WebP、MP4、WebM 背景（普通模式上限 128 MiB）。可用「移除背景」删除导入媒体。卸载命令：
 
 ```sh
 dsh plugin --profile desktop remove @dsh-external/dsh-plugin-astrology
@@ -37,7 +37,7 @@ dsh plugin --profile desktop remove @dsh-external/dsh-plugin-astrology
 dsh plugin --profile desktop update @dsh-external/dsh-plugin-astrology
 ```
 
-卸载后，设置和导入媒体仍保留在 Desktop 用户数据目录。当前插件没有清除数据的界面。若要删除，请先退出 Desktop，再删除该安装对应的应用 `userData` 目录下的 `astrology` 子目录；删除前请按当前操作系统的 Desktop 文档确认准确路径。
+普通模式的设置与媒体分别保存在当前应用的本地存储和 IndexedDB，卸载插件后会保留。原生模式由宿主管理数据，两种模式的设置各自保存。
 
 ## 从源码构建
 
@@ -56,13 +56,13 @@ pnpm pack --dry-run
 
 ## 兼容性
 
-插件客户端作为标准 DSH Web 插件加载。宿主没有 Astrology API v1 时，插件仍应用主题，并说明完整桌面功能不可用。完整功能要求官方 API、preload 桥接及原生资源支持，详见 [宿主集成说明](HOST-INTEGRATION.md)。
+插件客户端通过 DSH 的主题和设置扩展点加载。普通模式在界面中提供主题、侧栏和背景设置。支持 Astrology API v1 的宿主还会显示原生功能选项。
 
 ## 故障排查
 
-- **没有星术设置页：**确认 bundle 已在 Desktop profile 启用，重启 Desktop，并检查该版本是否提供 Astrology API v1。
-- **仍显示兼容性提示：**当前 Desktop 没有公开 API v1，或插件与宿主 API 版本不匹配。请在上游支持发布后更新 Desktop。
-- **导入背景显示空白：**重新选择支持的图片、MP4 或 WebM 文件。媒体由官方 Desktop 宿主校验和提供。
+- **没有星术设置页：**确认插件已在 Desktop profile 启用，并完全退出后重新打开 Desktop。
+- **只有主题、侧栏和背景选项：**当前宿主处于普通模式。原生功能需要 Astrology API v1。
+- **导入背景显示空白：**尝试受支持的图片，或使用当前 Desktop 能解码的 MP4、WebM 视频。
 - **设置没有保存：**等待 Desktop 恢复响应后重试。宿主拒绝写入时，界面会保留最后一次成功保存的值。
 - **设置读取失败：**点击「重新读取」，无需关闭设置页。取消媒体选择会显示「设置未更改」。
 - **片头预览失败：**设置页会保留并提示失败；宿主恢复后可重新预览。

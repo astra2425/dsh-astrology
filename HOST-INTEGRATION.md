@@ -2,6 +2,8 @@
 
 ## Status
 
+The stock-host mode already provides the theme, sidebar branding and workspace media through the standard DSH client plugin. This document concerns the additional native features.
+
 This is a required upstream change, not functionality that the external plugin can install by itself. The current official Desktop release does not expose the Astrology API used by this plugin. Full functionality becomes installable only after the API and its Desktop implementation ship in an official DSH release.
 
 The local `deepseek-harness` checkout contains a private Astrology implementation in its current uncommitted worktree. That work is useful as a behavior reference, but it does not establish a published extension contract. Do not advertise current released DSH versions as compatible based on this checkout.

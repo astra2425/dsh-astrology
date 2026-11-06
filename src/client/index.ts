@@ -6,9 +6,8 @@ import type {} from '@deepseek-ai/dsh-client-ui-theme/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type {} from '@deepseek-ai/dsh-client-ui-slots/client'
 import type {} from '@deepseek-ai/dsh-client-store/client'
-import './astrology/presentation.css'
-import { en, mountAstrology, zh } from './astrology/adapter.ts'
-import { AstrologyUnsupported } from './astrology/Unsupported.tsx'
+import { mountAstrology } from './astrology/adapter.ts'
+import { createRendererAstrology } from './astrology/renderer-api.ts'
 import { themeOverrides } from './theme/palette.ts'
 import { mountPresentation } from './presentation.ts'
 import { mountStylesheet } from './stylesheet.ts'
@@ -16,22 +15,16 @@ import { isAstrologyCarrier } from './astrology/host-api.ts'
 
 /** Services required by the client-owned theme and settings contributions. */
 export const inject = ['locale', 'slots', 'theme']
-const NS = 'brand.astrology'
 
-/** Register theme, brand and settings only when the versioned Desktop bridge is available. */
+/** Register the client features on stock hosts and opt into native support when available. */
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.theme.overrideTokens('dsh-plugin-astrology', themeOverrides), 'Astrology theme tokens')
   ctx.effect(mountStylesheet, 'Astrology stylesheet')
-  const api = window.dshAstrology
-  if (!isAstrologyCarrier(api)) {
-    ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'Astrology compatibility copy')
-    const t = ctx.locale.bind(NS)
-    ctx.slots.inject('settings.section', () => ctx.slots.register({
-      name: 'settings.section', id: 'astrology', order: 12, label: () => t('nav'), locale: NS,
-    }, AstrologyUnsupported))
-    return
-  }
-
-  ctx.plugin({ inject: ['locale', 'slots'], apply: child => mountAstrology(child, api) })
-  ctx.effect(() => mountPresentation(api), 'Astrology Desktop presentation')
+  const bridge = window.dshAstrology
+  const native = isAstrologyCarrier(bridge)
+  const renderer = native ? undefined : createRendererAstrology()
+  const api = renderer?.api ?? bridge!
+  if (renderer) ctx.effect(() => renderer.dispose, 'Astrology renderer storage')
+  ctx.plugin({ inject: ['locale', 'slots'], apply: child => mountAstrology(child, api, native) })
+  ctx.effect(() => mountPresentation(api), 'Astrology presentation')
 }

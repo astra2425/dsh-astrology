@@ -1,9 +1,9 @@
 /** Owns client-side presentation state while native windows and media selection remain in Desktop. */
-import type { AstrologyCarrier, AstrologyPreferences } from './astrology/host-api.ts'
+import type { AstrologyClient, AstrologyPreferences } from './astrology/host-api.ts'
 import { observePreferences } from './astrology/observe.ts'
 
 /** Apply settings to the document and return a disposer for plugin unload. */
-export function mountPresentation(api: AstrologyCarrier): () => void {
+export function mountPresentation(api: AstrologyClient): () => void {
   const root = document.documentElement
   let live = true
   let visible = true

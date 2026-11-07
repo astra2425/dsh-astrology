@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Play and preview startup animation or imported intro videos in stock DSH.
+- Add an effort slider that uses the stock model menu's existing effort selections.
+- Add an opt-in Windows companion process with a transparent, draggable window and Host-owned cleanup.
+
 - Enable theme, editable sidebar branding and local background media on stock Desktop without a native bridge.
 - Embed namespaced CSS with fixed selectors and normalized line endings so builds match across checkout paths and operating systems.
 

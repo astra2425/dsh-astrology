@@ -31,7 +31,10 @@ export const zh = {
   statusEmpty: '', saved: '设置已保存。', failure: '保存失败，请重试。', loading: '正在读取设置…',
   unchanged: '设置未更改。', loadFailure: '无法读取设置，请重试。', retry: '重新读取', previewFailure: '无法预览片头，请重试。',
   rendererDescription: '主题已启用。可修改侧栏名称及工作区背景，设置和媒体保存在当前应用的数据中。',
-  nativeRequired: '原生启动片头、思考强度滑动条样式和悬浮桌宠需要宿主提供 Astrology API v1。',
+  workspaceIntroDescription: '工作区加载时播放星术动画或你选择的视频。',
+  workspaceIntroSequence: '片头在应用窗口内播放。按 Esc 或点击「跳过片头」返回工作区。',
+  clearVideo: '移除片头视频',
+  windowsPetHelp: '官方 Windows 版可通过星术插件的 desktopPet 配置启动独立的桌面伙伴。操作见插件 README。',
   clearBackground: '移除背景',
 }
 export const en: Record<keyof typeof zh, string> = {
@@ -53,7 +56,10 @@ export const en: Record<keyof typeof zh, string> = {
   statusEmpty: '', saved: 'Settings saved.', failure: 'Save failed. Please try again.', loading: 'Loading settings…',
   unchanged: 'Settings unchanged.', loadFailure: 'Could not load settings. Please try again.', retry: 'Retry', previewFailure: 'Could not preview the intro. Please try again.',
   rendererDescription: 'The theme is active. Customize the sidebar name and workspace background. Preferences and media are stored in this app.',
-  nativeRequired: 'Native startup intro, reasoning slider styling and the floating companion require Astrology API v1 from the host.',
+  workspaceIntroDescription: 'Play the Astrology animation or an imported video when the workspace loads.',
+  workspaceIntroSequence: 'The intro plays inside the app window. Press Esc or select Skip intro to return to the workspace.',
+  clearVideo: 'Remove intro video',
+  windowsPetHelp: 'On stock Windows Desktop, enable the separate companion using the plugin’s desktopPet setting. See the plugin README.',
   clearBackground: 'Remove background',
 }
 

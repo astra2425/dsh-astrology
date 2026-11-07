@@ -107,6 +107,7 @@ export function createSettingsController(api: AstrologyClient) {
       return run(() => api.configure({ brandChinese: chinese, brandEnglish: english }), 'brand')
     },
     chooseVideo: () => run(() => api.chooseVideo()),
+    clearVideo: api.clearVideo ? () => run(() => api.clearVideo!()) : undefined,
     chooseBackground: () => run(() => api.chooseBackground()),
     clearBackground: api.clearBackground ? () => run(() => api.clearBackground!()) : undefined,
     preview: () => run(() => api.presentation(true), 'preview'),

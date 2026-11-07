@@ -1,5 +1,4 @@
-# Astrology is an optional client-owned bundle. The official Desktop host must
-# provide the versioned preload API before its Desktop-only controls can work.
+# Astrology uses the standard client plugin face and an optional Windows companion.
 - insert:
     - id: astrology
       name: '@dsh-external/dsh-plugin-astrology'

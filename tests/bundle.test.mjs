@@ -33,8 +33,10 @@ test('built module-loader artifact registers configurable settings on stock host
       documentElement: { dataset: {} },
       addEventListener() {},
       removeEventListener() {},
+      querySelector: () => null,
     }
-    vm.runInNewContext(bundle, { window, document, Blob, HTMLVideoElement: class {},
+    vm.runInNewContext(bundle, { window, document, Blob, queueMicrotask, cancelAnimationFrame() {},
+      MutationObserver: class { observe() {} disconnect() {} }, HTMLVideoElement: class {},
       localStorage: { getItem: key => preferences.get(key), setItem: (key, value) => preferences.set(key, value) },
     })
     const ctx = {

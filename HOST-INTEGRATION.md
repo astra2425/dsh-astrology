@@ -2,7 +2,7 @@
 
 ## Status
 
-The stock-host mode already provides the theme, sidebar branding and workspace media through the standard DSH client plugin. This document concerns the additional native features.
+The stock-host mode provides theme, sidebar branding, workspace media, an in-app intro and the slider through the client plugin. Windows can run an independent companion from the plugin's Host entry. This document describes the separate versioned native integration.
 
 This is a required upstream change, not functionality that the external plugin can install by itself. The current official Desktop release does not expose the Astrology API used by this plugin. Full functionality becomes installable only after the API and its Desktop implementation ship in an official DSH release.
 

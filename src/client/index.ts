@@ -8,6 +8,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-slots/client'
 import type {} from '@deepseek-ai/dsh-client-store/client'
 import { mountAstrology } from './astrology/adapter.ts'
 import { createRendererAstrology } from './astrology/renderer-api.ts'
+import { mountStockSlider } from './astrology/stock-slider.ts'
 import { themeOverrides } from './theme/palette.ts'
 import { mountPresentation } from './presentation.ts'
 import { mountStylesheet } from './stylesheet.ts'
@@ -27,4 +28,5 @@ export function apply(ctx: ClientContext): void {
   if (renderer) ctx.effect(() => renderer.dispose, 'Astrology renderer storage')
   ctx.plugin({ inject: ['locale', 'slots'], apply: child => mountAstrology(child, api, native) })
   ctx.effect(() => mountPresentation(api), 'Astrology presentation')
+  if (renderer) ctx.effect(mountStockSlider, 'Astrology reasoning slider')
 }

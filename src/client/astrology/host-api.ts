@@ -40,6 +40,7 @@ export interface AstrologyCarrier {
 /** Plugin-owned client operations can also be backed by renderer storage. */
 export type AstrologyClient = Omit<AstrologyCarrier, 'apiVersion'> & {
   clearBackground?: () => Promise<AstrologyPreferences>
+  clearVideo?: () => Promise<AstrologyPreferences>
 }
 
 /** Check the complete bridge before installing any native-dependent UI. */

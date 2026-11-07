@@ -47,7 +47,6 @@ export function AstrologySettings({ api, native, close, t }: Props) {
     <header className="dsh-astrology-pageHeader">
       <h2>{t('title')}</h2>
       <p>{t(native ? 'description' : 'rendererDescription')}</p>
-      {!native && <p>{t('nativeRequired')}</p>}
     </header>
     {loading && <p className="dsh-astrology-loading" role="status">{t('loading')}</p>}
     {notice === 'loadFailure' && <div className="dsh-astrology-cardFooter">
@@ -114,11 +113,10 @@ export function AstrologySettings({ api, native, close, t }: Props) {
       </fieldset>
     </section>
 
-    {native && <>
     <section className="dsh-astrology-group" aria-labelledby="astrology-intro-heading">
       <header className="dsh-astrology-groupHeader">
         <h3 id="astrology-intro-heading">{t('introSection')}</h3>
-        <p>{t('introDescription')}</p>
+        <p>{t(native ? 'introDescription' : 'workspaceIntroDescription')}</p>
       </header>
       <fieldset className="dsh-astrology-card" disabled={busy || !view}>
         <label className="dsh-astrology-row"><span>{t('intro')}</span>
@@ -127,11 +125,11 @@ export function AstrologySettings({ api, native, close, t }: Props) {
         <label className="dsh-astrology-row"><span>{t('sound')}</span>
           <input type="checkbox" checked={view?.videoSound === true} onChange={event => updatePreference('videoSound', event.target.checked)} />
         </label>
-        <label className="dsh-astrology-row"><span>{t('startupDisplay')}</span>
+        {native && <label className="dsh-astrology-row"><span>{t('startupDisplay')}</span>
           <select value={view?.startupDisplay ?? 'window'} onChange={event => updatePreference('startupDisplay', event.target.value === 'fullscreen' ? 'fullscreen' : 'window')}>
             <option value="window">{t('window')}</option><option value="fullscreen">{t('fullscreen')}</option>
           </select>
-        </label>
+        </label>}
         <label className="dsh-astrology-row"><span>{t('introFit')}</span>
           <select value={view?.videoFit ?? 'contain'} onChange={event => updatePreference('videoFit', event.target.value === 'cover' ? 'cover' : 'contain')}>
             <option value="contain">{t('contain')}</option><option value="cover">{t('coverFit')}</option>
@@ -140,13 +138,16 @@ export function AstrologySettings({ api, native, close, t }: Props) {
         <div className="dsh-astrology-cardFooter">
           <span className="dsh-astrology-helper">{t(view?.media ? 'introVideo' : 'introDefault')}</span>
           <div className="dsh-astrology-buttonGroup">
+            {controller.clearVideo && view?.media && <button type="button"
+              className="dsh-astrology-secondaryButton" disabled={busy}
+              onClick={() => { void controller.clearVideo?.() }}>{t('clearVideo')}</button>}
             <button type="button" className="dsh-astrology-secondaryButton" disabled={busy || !view} onClick={() => { void controller.chooseVideo() }}>{t('chooseVideo')}</button>
             <button type="button" className="dsh-astrology-secondaryButton" disabled={busy || !view} onClick={() => {
-              void controller.preview().then(opened => { if (opened) close() })
+              void controller.preview().then(opened => { if (opened && native) close() })
             }}>{t('preview')}</button>
           </div>
         </div>
-        <p className="dsh-astrology-inlineNote">{t('introSequence')}</p>
+        <p className="dsh-astrology-inlineNote">{t(native ? 'introSequence' : 'workspaceIntroSequence')}</p>
       </fieldset>
     </section>
 
@@ -173,15 +174,14 @@ export function AstrologySettings({ api, native, close, t }: Props) {
         <h3 id="astrology-companion-heading">{t('companionSection')}</h3>
         <p>{t('companionDescription')}</p>
       </header>
-      <fieldset className="dsh-astrology-card" disabled={busy || !view}>
+      {native ? <fieldset className="dsh-astrology-card" disabled={busy || !view}>
         <label className="dsh-astrology-row"><span>{t('pet')}</span>
           <input type="checkbox" checked={view?.petEnabled === true} onChange={event => updatePreference('petEnabled', event.target.checked)} />
         </label>
         <p className="dsh-astrology-inlineNote">{t('companionHelp')}</p>
-      </fieldset>
+      </fieldset> : <p className="dsh-astrology-inlineNote">{t('windowsPetHelp')}</p>}
     </section>
 
-    </>}
     <p className="dsh-astrology-status" role="status" aria-live="polite">{t(notice === 'loadFailure' ? 'statusEmpty' : notice || 'statusEmpty')}</p>
   </section>
 }

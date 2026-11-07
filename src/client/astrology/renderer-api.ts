@@ -1,4 +1,5 @@
 import type { AstrologyClient, AstrologyPreferences } from './host-api.ts'
+import { showWorkspaceIntro } from './intro.ts'
 
 const key = 'dsh-plugin-astrology.preferences.v1'
 const formats = new Map<string, NonNullable<AstrologyPreferences['backgroundMedia']>>([
@@ -19,6 +20,9 @@ export function createRendererAstrology(): { api: AstrologyClient; dispose: () =
   let database: Promise<IDBDatabase> | undefined
   let disposed = false
   let cancelPicker: (() => void) | undefined
+  let closeIntro: (() => void) | undefined
+  let introClaimed = false
+  let presentationGeneration = 0
   const listeners = new Set<(view: AstrologyPreferences) => void>()
   const publish = (): AstrologyPreferences => {
     for (const listener of listeners) listener(view)
@@ -50,6 +54,13 @@ export function createRendererAstrology(): { api: AstrologyClient; dispose: () =
     return view
   }
 
+  function setIntro(blob?: Blob): void {
+    const previous = view.mediaURL
+    const media = blob?.type === 'video/mp4' ? 'mp4' : blob?.type === 'video/webm' ? 'webm' : null
+    view = { ...view, media, mediaURL: media && blob ? URL.createObjectURL(blob) : null }
+    if (previous) URL.revokeObjectURL(previous)
+  }
+
   const state = async (): Promise<AstrologyPreferences> => {
     initial ??= (async () => {
       let saved: Partial<AstrologyPreferences> | null = null
@@ -59,19 +70,28 @@ export function createRendererAstrology(): { api: AstrologyClient; dispose: () =
         if (typeof saved.brandEnglish === 'string') view.brandEnglish = saved.brandEnglish.slice(0, 32)
         if (saved.backgroundFit === 'contain') view.backgroundFit = 'contain'
         if (saved.backgroundLoop === false) view.backgroundLoop = false
+        view.introEnabled = saved.introEnabled === true
+        view.videoSound = saved.videoSound === true
+        if (saved.videoFit === 'cover') view.videoFit = 'cover'
+        if (saved.reasoningSliderStyle === 'stage' || saved.reasoningSliderStyle === 'minimal') {
+          view.reasoningSliderStyle = saved.reasoningSliderStyle
+        }
+        view.reasoningSliderMotion = saved.reasoningSliderMotion !== false
       }
-      const media = await mediaStorage('readonly', store => store.get('background')).catch(() => undefined)
+      const [media, intro] = await Promise.all(['background', 'intro'].map(name =>
+        mediaStorage('readonly', store => store.get(name)).catch(() => undefined)))
       if (!disposed && media instanceof Blob) setMedia(media)
+      if (!disposed && intro instanceof Blob) setIntro(intro)
     })()
     await initial
     return view
   }
 
-  function pick(): Promise<File | undefined> {
+  function pick(accept: string): Promise<File | undefined> {
     return new Promise((resolve, reject) => {
       const input = document.createElement('input')
       input.type = 'file'
-      input.accept = [...formats.keys()].join(',')
+      input.accept = accept
       input.hidden = true
       document.body.append(input)
       const finish = (file?: File) => { input.remove(); cancelPicker = undefined; resolve(file) }
@@ -88,15 +108,17 @@ export function createRendererAstrology(): { api: AstrologyClient; dispose: () =
     async configure(changes) {
       await state()
       if (disposed) throw Error('Astrology was unloaded')
-      const { brandChinese, brandEnglish, backgroundFit, backgroundLoop } = { ...view, ...changes }
+      const { brandChinese, brandEnglish, backgroundFit, backgroundLoop, introEnabled, videoSound, videoFit,
+        reasoningSliderStyle, reasoningSliderMotion } = { ...view, ...changes }
       const preferences = { brandChinese: brandChinese.trim().slice(0, 24) || defaults.brandChinese,
-        brandEnglish: brandEnglish.trim().slice(0, 32), backgroundFit, backgroundLoop }
+        brandEnglish: brandEnglish.trim().slice(0, 32), backgroundFit, backgroundLoop,
+        introEnabled, videoSound, videoFit, reasoningSliderStyle, reasoningSliderMotion }
       localStorage.setItem(key, JSON.stringify(preferences))
       view = { ...view, ...preferences }
       return publish()
     },
     async chooseBackground() {
-      const file = await pick()
+      const file = await pick([...formats.keys()].join(','))
       if (!file || disposed) return view
       if (!formats.has(file.type) || file.size === 0 || file.size > 128 * 1024 * 1024) throw Error('Unsupported background file')
       await state()
@@ -116,17 +138,53 @@ export function createRendererAstrology(): { api: AstrologyClient; dispose: () =
       sync()
       return () => document.removeEventListener('visibilitychange', sync)
     },
-    onShown: () => () => {},
-    claimIntro: async () => false,
-    presentation: async () => {},
+    onShown(listener) {
+      let subscribed = true
+      queueMicrotask(() => { if (subscribed && !disposed) listener() })
+      return () => { subscribed = false }
+    },
+    async claimIntro() {
+      await state()
+      if (disposed || introClaimed) return false
+      introClaimed = true
+      return view.introEnabled
+    },
+    async presentation(enabled) {
+      const generation = ++presentationGeneration
+      closeIntro?.()
+      closeIntro = undefined
+      if (!enabled || disposed) return
+      await state()
+      if (!disposed && generation === presentationGeneration) {
+        closeIntro = showWorkspaceIntro(view)
+      }
+    },
     toggleFullscreen: async () => {},
-    chooseVideo: state,
+    async chooseVideo() {
+      const file = await pick('video/mp4,video/webm')
+      if (!file || disposed) return view
+      if (!['video/mp4', 'video/webm'].includes(file.type) || file.size === 0 || file.size > 128 * 1024 * 1024) {
+        throw Error('Unsupported intro video')
+      }
+      await state()
+      await mediaStorage('readwrite', store => store.put(file, 'intro'))
+      if (!disposed) { setIntro(file); publish() }
+      return view
+    },
+    async clearVideo() {
+      await state()
+      await mediaStorage('readwrite', store => store.delete('intro'))
+      if (!disposed) { setIntro(); publish() }
+      return view
+    },
   }
   return { api, dispose: () => {
     disposed = true
     cancelPicker?.()
+    closeIntro?.()
     listeners.clear()
     if (view.backgroundURL) URL.revokeObjectURL(view.backgroundURL)
+    if (view.mediaURL) URL.revokeObjectURL(view.mediaURL)
     void database?.then(db => db.close(), () => undefined)
   } }
 }
